@@ -7,10 +7,11 @@ def findBest(tensor, threshold):
 	for i in range(len(tensor.shape) - 1):
 		for j in range(i + 1, len(t.shape)):
 			u,s,v,vs = split(t, (i,j), threshold)
-			print(len(tensor.shape),i,j,len(s))
-			if len(s) < best[0]:
+			if len(s) < best[0] and u.size + vs.size < t.size:
 				best = [len(s), u, vs]
 	best = best[1:]
-	if len(best[-1].shape) > 3:
+	if best[-1] is None:
+		return [t]
+	elif len(best[-1].shape) > 3:
 		best = best[:-1] + findBest(best[-1], threshold)
 	return best

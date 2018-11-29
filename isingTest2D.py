@@ -1,18 +1,16 @@
 import numpy as np
+import time
+
 import brute
 import greedy
-
-import matplotlib.pyplot as plt
-plt.style.use('ggplot')
-
+import greedy_variable
 
 dataB = []
 dataG = []
+dataG2 = []
 
 n = 9
-jran = np.linspace(-7,7,num=30,endpoint=True)
-
-#jran = [jran[-3]]
+jran = np.linspace(-7,7,num=100,endpoint=True)
 
 for J in jran:
 
@@ -23,24 +21,29 @@ for J in jran:
 
 	print(x.shape)
 
+	start = time.clock()
 	b = brute.findBest(x, 1e-6)
+	end = time.clock()
+	dataB.append([J,sum([v.size for v in b[2]]) * 1./x.size, end - start])
+
+
+	start = time.clock()
 	g = greedy.findBest(x, 1e-6)
+	end = time.clock()
+	dataG.append([J,sum([v.size for v in g]) * 1./x.size, end - start])
+
+
+	start = time.clock()
+	g2 = greedy_variable.findBest(x, 1e-6)
+	end = time.clock()
+	dataG2.append([J,sum([v.size for v in g2]) * 1./x.size, end - start])
+
 
 	print([a.shape for a in b[2]])
 	print([a.shape for a in g])
 	print(sum([v.size for v in g]))
 
-	dataB.append(sum([v.size for v in b[2]]) * 1./x.size)
-	dataG.append(sum([v.size for v in g]) * 1./x.size)
 
-fig = plt.figure(figsize=(5,4))
-ax = plt.subplot(111)
-print(dataB)
-print(dataG)
-plt.plot(jran, dataB, label='Brute force')
-plt.plot(jran, dataG, label='Greedy')
-plt.xlabel('J')
-plt.ylabel('Compression Ratio')
-plt.legend(loc='upper left')
-plt.tight_layout()
-plt.savefig('../isingJ2D.pdf')
+np.savetxt('../Data/isingDecomp2Db.dat', dataB)
+np.savetxt('../Data/isingDecomp2Dg.dat', dataG)
+np.savetxt('../Data/isingDecomp2Dg2.dat', dataG2)

@@ -7,7 +7,9 @@ def findBest(tensor, threshold):
 	trees = constructTrees(len(tensor.shape))
 	print(len(trees))
 
-	for t in trees:
+	for i,t in enumerate(trees):
+		if i%50 == 0:
+			print(i, len(trees))
 		v = np.copy(tensor)
 		s = treeToSplit(t)
 		arrs = []

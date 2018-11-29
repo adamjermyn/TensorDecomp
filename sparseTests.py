@@ -1,9 +1,8 @@
 import numpy as np
+import time
+
 import brute
 import greedy
-
-import matplotlib.pyplot as plt
-plt.style.use('ggplot')
 
 ## Random examples
 
@@ -13,7 +12,7 @@ print('---')
 dataB = []
 dataG = []
 
-for n in range(4, 10):
+for n in range(4, 9):
 
 	print(n)
 
@@ -25,18 +24,22 @@ for n in range(4, 10):
 		while np.sum(x) == 0:
 			x = np.random.choice(2, size=[2 for k in range(n)], p=[0.95,0.05])
 
+
+		start = time.clock()
 		b = brute.findBest(x, 1e-6)
+		end = time.clock()
+		dB.append([n,sum([v.size for v in b[2]]) * 1./x.size, end - start])
+
+
+		start = time.clock()
 		g = greedy.findBest(x, 1e-6)
+		end = time.clock()
+		dG.append([n,sum([v.size for v in g]) * 1./x.size, end - start])
 
+	dataB.append(np.average(dB, axis=0))
+	dataG.append(np.average(dG, axis=0))
 
-
-		dB.append(sum([v.size for v in b[2]]) * 1./x.size)
-		dG.append(sum([v.size for v in g]) * 1./x.size)
-
-	dataB.append(np.average(dB))
-	dataG.append(np.average(dG))
-
-for n in range(10,16):
+for n in range(9,16):
 	dG = []
 
 	print(n)
@@ -46,19 +49,13 @@ for n in range(10,16):
 		while np.sum(x) == 0:
 			x = np.random.choice(2, size=[2 for k in range(n)], p=[0.95,0.05])
 
+		start = time.clock()
 		g = greedy.findBest(x, 1e-6)
-		dG.append(sum([v.size for v in g]) * 1./x.size)
+		end = time.clock()
+		dG.append([n,sum([v.size for v in g]) * 1./x.size, end - start])
 
-	dataG.append(np.average(dG))
+	dataG.append(np.average(dG, axis=0))
 
 
-import matplotlib.pyplot as plt
-fig = plt.figure(figsize=(5,4))
-ax = plt.subplot(111)
-plt.plot(range(4,10), dataB, label='Brute force')
-plt.plot(range(4,16), dataG, label='Greedy')
-plt.xlabel('Number of Indices')
-plt.ylabel('Compression Ratio')
-plt.legend()
-plt.tight_layout()
-plt.savefig('../sparse.pdf')
+np.savetxt('Data/isingDecompSparseB.dat', dataB)
+np.savetxt('Data/isingDecompSparseG.dat', dataG)
